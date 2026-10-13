@@ -28,8 +28,8 @@ then **File → Share → Publish to web → CSV** and paste the link into
 
 ## Webkinz pets
 
-The Webkinz page reads your pets live from the same Google Sheet as the Shiny
-dashboard (`PETS_SHEET_ID` in `js/data.js`), and the counts and zodiac
+The Webkinz page reads your pets live from your Google Sheet
+(`PETS_SHEET_ID` in `js/data.js`), and the counts and zodiac
 charts are worked out from it automatically, so they stay up to date as you add pets. The sheet needs to be shared as
 "anyone with the link can view". Add a `Photo` column (e.g. `images/pets/bubblegum.jpg`)
 to show pictures instead of emoji. If the sheet can't load, the `PETS` list is used instead.

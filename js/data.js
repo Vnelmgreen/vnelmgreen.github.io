@@ -14,11 +14,11 @@ const SITE = {
 
 /* ---------- Webkinz ----------
    The Webkinz page first tries to load every pet straight from your
-   Google Sheet (the same one the Shiny dashboard reads), and the zodiac
+   Google Sheet, and the zodiac
    charts and counts are worked out from it automatically. If that
    ever fails, it shows the PETS list below instead.
    Set PETS_SHEET_ID to "" to only use the list below. */
-const PETS_SHEET_ID = "1qV1gZpJbnjeP6cPLxpVRqQSA2jTnBP8aPhSSSwzpEDU";
+const PETS_SHEET_ID = "12-oEkPssDf0Qojl0aef_c2Z426LhV9ThtyhoNF3UV4g";
 
 // Pets to spotlight at the top of the Webkinz page (use their exact names).
 const FAVORITE_PETS = [];
