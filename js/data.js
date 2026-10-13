@@ -10,13 +10,12 @@ const SITE = {
   tagline: "pets ♥ research ♥ thoughts ♥ wishes",
   // the scrolling message under the menu
   ticker: "✨ Welcome to my little corner of the internet! ✨ Say hi to my Webkinz ♥ Check out my research ♥ Peek at my wishlist before birthdays 🎁 ✨",
-  // your Shiny dashboard (shown on the Webkinz page)
-  dashboardUrl: "https://viennaelmgreen.shinyapps.io/Webkinz/",
 };
 
 /* ---------- Webkinz ----------
    The Webkinz page first tries to load every pet straight from your
-   Google Sheet (the same one the Shiny dashboard reads). If that
+   Google Sheet (the same one the Shiny dashboard reads), and the zodiac
+   charts and counts are worked out from it automatically. If that
    ever fails, it shows the PETS list below instead.
    Set PETS_SHEET_ID to "" to only use the list below. */
 const PETS_SHEET_ID = "1qV1gZpJbnjeP6cPLxpVRqQSA2jTnBP8aPhSSSwzpEDU";

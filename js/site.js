@@ -189,6 +189,7 @@ function petFromSheet(row) {
     gender: row["gender"],
     birthday: row["birthday"] || [row["birth month"]].filter(Boolean).join(" "),
     sign: row["zodiac sign"],
+    element: row["zodiac element"],
     photo: row["photo"] || "",
   };
 }
@@ -233,6 +234,7 @@ function showPets(pets) {
   const sorted = [...pets].sort((a, b) => faves.has(b.name) - faves.has(a.name));
   grid.innerHTML = sorted.map(p => petCard(p, faves.has(p.name))).join("");
   renderPetStats(pets);
+  renderPetCharts(pets);
 }
 
 async function renderPets() {
@@ -250,11 +252,106 @@ async function renderPets() {
   showPets(PETS);
 }
 
-function renderDashboard() {
-  const frame = $("dashboard");
-  if (frame) frame.src = SITE.dashboardUrl;
-  const link = $("dashboard-link");
-  if (link) link.href = SITE.dashboardUrl;
+/* ---------- webkinz charts (built from the same pet list as the cards) ---------- */
+
+const ZODIAC = [
+  ["Aries", "fire"], ["Taurus", "earth"], ["Gemini", "air"], ["Cancer", "water"],
+  ["Leo", "fire"], ["Virgo", "earth"], ["Libra", "air"], ["Scorpio", "water"],
+  ["Sagittarius", "fire"], ["Capricorn", "earth"], ["Aquarius", "air"], ["Pisces", "water"],
+];
+const ELEMENTS = [
+  { key: "fire",  name: "Fire",  emoji: "🔥", color: "#f24000" },
+  { key: "earth", name: "Earth", emoji: "🌱", color: "#00a070" },
+  { key: "air",   name: "Air",   emoji: "🌬️", color: "#e09000" },
+  { key: "water", name: "Water", emoji: "💧", color: "#007ba5" },
+];
+const elementOf = sign => (ZODIAC.find(([s]) => s.toLowerCase() === String(sign).trim().toLowerCase()) || [])[1];
+const elementInfo = key => ELEMENTS.find(e => e.key === key);
+const plural = n => `${n} pet${n === 1 ? "" : "s"}`;
+
+// Round the top of the chart up to a tidy number and pick gridline spacing.
+function niceScale(max) {
+  const step = max <= 5 ? 1 : max <= 10 ? 2 : max <= 25 ? 5 : 10;
+  return { top: Math.max(step, Math.ceil(max / step) * step), step };
+}
+
+function countBy(pets, keyFn) {
+  const counts = new Map();
+  pets.forEach(p => {
+    const k = keyFn(p);
+    if (k) counts.set(k, (counts.get(k) || 0) + 1);
+  });
+  return counts;
+}
+
+function dataTable(caption, rows) {
+  return `<details class="chart-table"><summary>See the numbers</summary>
+      <table><caption>${esc(caption)}</caption>
+        <thead><tr><th scope="col">${esc(rows.head[0])}</th><th scope="col">Pets</th></tr></thead>
+        <tbody>${rows.body.map(([k, n]) => `<tr><th scope="row">${esc(k)}</th><td>${n}</td></tr>`).join("")}</tbody>
+      </table></details>`;
+}
+
+function elementLegend() {
+  return `<ul class="legend">${ELEMENTS.map(e =>
+    `<li><span class="swatch" style="--c:${e.color}"></span>${e.emoji} ${e.name}</li>`).join("")}</ul>`;
+}
+
+function renderSignChart(pets) {
+  const el = $("sign-chart");
+  if (!el) return;
+  const counts = countBy(pets, p => {
+    const match = ZODIAC.find(([s]) => s.toLowerCase() === String(p.sign).trim().toLowerCase());
+    return match && match[0];
+  });
+  const { top, step } = niceScale(Math.max(1, ...counts.values()));
+  const ticks = [];
+  for (let t = 0; t <= top; t += step) ticks.push(`<span class="tick" style="bottom:${t / top * 100}%">${t}</span>`);
+  const bars = ZODIAC.map(([sign, elem]) => {
+    const n = counts.get(sign) || 0;
+    const e = elementInfo(elem);
+    return `<div class="bar-col" tabindex="0" data-tip="${sign}: ${plural(n)}" aria-label="${sign}, ${e.name}: ${plural(n)}">
+        <div class="bar-track"><div class="bar" style="height:${n / top * 100}%;--c:${e.color}"></div></div>
+        <span class="bar-label"><span class="sym" aria-hidden="true">${SIGN_EMOJI[sign.toLowerCase()]}</span><span class="name">${sign}</span></span>
+      </div>`;
+  }).join("");
+  el.innerHTML = `${elementLegend()}
+    <div class="column-chart" role="group" aria-label="Number of pets for each zodiac sign">
+      <div class="ticks" aria-hidden="true">${ticks.join("")}</div>
+      <div class="bars">${bars}</div>
+    </div>
+    ${dataTable("Pets per zodiac sign", { head: ["Sign"], body: ZODIAC.map(([s]) => [s, counts.get(s) || 0]) })}`;
+}
+
+function renderElementChart(pets) {
+  const el = $("element-chart");
+  if (!el) return;
+  const counts = countBy(pets, p => (String(p.element || "").trim().toLowerCase()) || elementOf(p.sign));
+  const max = Math.max(1, ...ELEMENTS.map(e => counts.get(e.key) || 0));
+  el.innerHTML = `<div class="hbar-chart">${ELEMENTS.map(e => {
+      const n = counts.get(e.key) || 0;
+      return `<div class="hbar-row" tabindex="0" data-tip="${e.name}: ${plural(n)}">
+          <span class="hbar-label">${e.emoji} ${e.name}</span>
+          <div class="hbar-track"><div class="hbar" style="width:${n / max * 100}%;--c:${e.color}"></div></div>
+          <span class="hbar-value">${n}</span>
+        </div>`;
+    }).join("")}</div>
+    ${dataTable("Pets per zodiac element", { head: ["Element"], body: ELEMENTS.map(e => [e.name, counts.get(e.key) || 0]) })}`;
+}
+
+function renderGroupTiles(pets) {
+  const el = $("group-tiles");
+  if (!el) return;
+  const counts = [...countBy(pets, p => String(p.group || "").trim()).entries()].sort((a, b) => b[1] - a[1]);
+  el.innerHTML = counts.map(([group, n]) =>
+    `<div class="stat"><span class="stat-emoji" aria-hidden="true">${GROUP_EMOJI[group.toLowerCase()] || "🌟"}</span><b>${n}</b>${esc(group)}</div>`
+  ).join("") || "<p>Add a group to each pet to see this ✨</p>";
+}
+
+function renderPetCharts(pets) {
+  renderSignChart(pets);
+  renderElementChart(pets);
+  renderGroupTiles(pets);
 }
 
 /* ---------- wishlist ---------- */
@@ -325,6 +422,5 @@ sparkleTrail();
 renderPosts();
 renderResearch();
 renderPets();
-renderDashboard();
 renderWishlist();
 renderFavorites();

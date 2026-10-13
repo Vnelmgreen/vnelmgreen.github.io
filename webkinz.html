@@ -23,20 +23,30 @@
       </div>
     </section>
 
+    <section class="window sky">
+      <h2 class="window-title">Zodiac signs</h2>
+      <div class="window-body"><div id="sign-chart"></div></div>
+    </section>
+
+    <div class="grid">
+      <section class="window sky">
+        <h2 class="window-title">Zodiac elements</h2>
+        <div class="window-body"><div id="element-chart"></div></div>
+      </section>
+
+      <section class="window">
+        <h2 class="window-title">Pet groups</h2>
+        <div class="window-body"><div class="stats" id="group-tiles"></div></div>
+      </section>
+    </div>
+
     <section class="window lilac">
       <h2 class="window-title">The whole family</h2>
       <div class="window-body">
-        <div class="grid" id="pet-grid"><p>Fetching the pets… 🐾</p></div>
+        <div class="grid pet-grid" id="pet-grid"><p>Fetching the pets… 🐾</p></div>
       </div>
     </section>
 
-    <section class="window sky">
-      <h2 class="window-title">Zodiac dashboard</h2>
-      <div class="window-body">
-        <p>I made an interactive dashboard of my pets' zodiac signs, elements and groups in R Shiny. It can take a few seconds to wake up. <a id="dashboard-link" href="#" target="_blank" rel="noopener">Open it in its own tab ↗</a></p>
-        <iframe id="dashboard" class="embed" title="Webkinz zodiac dashboard" loading="lazy"></iframe>
-      </div>
-    </section>
   </main>
   <div id="site-footer"></div>
 </div>
