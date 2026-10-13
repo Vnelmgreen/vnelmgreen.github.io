@@ -35,33 +35,77 @@ const PETS = [
    Leave a link as "" and its button won't show. */
 const RESEARCH = [
   {
-    title: "Title of your paper goes here",
-    authors: "Elmgreen V, Coauthor A, Coauthor B",
-    venue: "Journal Name",
+    title: "An interactive dashboard for global reports on the Ralstonia solanacearum species complex",
+    authors: "Elmgreen VN, Ramirez B​, Sharma R, Vinatzer BA, Lowe-Power​ TM, and Pierce-Ward NT",
+    venue: "Access Microbiology",
     year: 2025,
     type: "Article",            // Article, Poster, Talk, Thesis, Preprint…
-    summary: "One or two friendly sentences about what you found, for family who aren't in your field.",
+    summary: "We developed an interactive dashboard designed to allow users to explore the diversity and biogeography of the RSSC. The dashboard visualizes data in the form of maps, charts, and tables, with a variety of user-interactive filters for taxonomic, geographic, and host of isolation specifications.",
     pdf: "",
-    doi: "",                    // e.g. "https://doi.org/10.xxxx/xxxxx"
-    link: "",                   // anything else: slides, code, news story
+    doi: "https://doi.org/10.1099/acmi.0.001126.v3",                    // e.g. "https://doi.org/10.xxxx/xxxxx"
+    link: "https://ralstoniadashboard.shinyapps.io/RalstoniaWiltDashboard/",                   // anything else: slides, code, news story
   },
   {
-    title: "Webkinz dashboard: an interactive look at my pet collection",
-    authors: "Elmgreen V",
+    title: "Ralstonia Wilt Dashboard",
+    authors: "Elmgreen VN, Lowe-Power​ TM, and Pierce-Ward NT",
     venue: "shinyapps.io",
     year: 2025,
-    type: "Project",
-    summary: "An R Shiny dashboard of my Webkinz by zodiac sign, element and pet group.",
+    type: "Dashboard",
+    summary: "An interactive dashboard for global reports on the RSSC",
+    pdf: "",
+    doi: "https://doi.org/10.5281/zenodo.16945323",
+    link: "https://ralstoniadashboard.shinyapps.io/RalstoniaWiltDashboard/",
+  },
+  {
+    title: "Investigating the Host Range and Genetic Diversity of the Ralstonia solanacearum Species Complex",
+    authors: "Elmgreen VN",
+    venue: "California Digital Library, University of California",
+    year: 2025,
+    type: "MS Thesis",
+    summary: "The Ralstonia solanacearum species complex (RSSC) is a globally distributed group of gram negative, soil-borne bacteria that cause bacterial wilt disease on a broad range of plant species. Through four distinct projects, I investigated the genetic diversity, host range, and distribution of the RSSC and genes involved in their interactions with plants.",
     pdf: "",
     doi: "",
-    link: "https://viennaelmgreen.shinyapps.io/Webkinz/",
+    link: "https://escholarship.org/uc/item/3fj3h6c2",
+  }, 
+  {
+    title: "Genome Resource Announcement of 19 Tanzanian Phylotype I Ralstonia pseudosolanacearum Draft Genomes",
+    authors: "Elmgreen VN, Kanyagha H, Cellier G, Bains S, Green S, Hayes L, Lemus LM, Prasad N, Ramirez B, Vo V, Cowell T, Miller SA, and Lowe-Power​ TM",
+    venue: "PhytoFrontiers",
+    year: 2025,
+    type: "Article",
+    summary: "Tomato is a widely cultivated and economically important crop in Tanzania, but bacterial wilt disease caused by the RSSC has become one of the most devastating diseases in tomato-producing regions in Tanzania. To investigate the genomic diversity of RSSC strains isolated from Tanzania, we generated draft genomes of 19 Ralstonia isolates from five villages in four regions.",
+    pdf: "",
+    doi: "https://doi.org/10.1094/PHYTOFR-11-24-0126-A",
+    link: "",
+  }, 
+  {
+    title: "Microbial partner (MiPner) analysis",
+    authors: "Bennetzen JL, Fernandez-Canela J, Elmgreen VN, McCann SR, Norris ME, Deng X, and Brailey-Crane P",
+    venue: "Frontiers in Microbiomes",
+    year: 2025,
+    type: "Article",
+    summary: "Although a few bacteria have been studied in great depth, relatively little is known about the characteristics of microbe-microbe interactions that occur within ecosystems on a daily basis. A simple, robust technique was developed to set up the foundation for investigating pairwise bacterial-bacterial interactions, using cell-cell binding as a self-selective mechanism to identify interesting bacterial species pairs.",
+    pdf: "",
+    doi: "https://doi.org/10.3389/frmbi.2024.1500798",
+    link: "",
+  },
+  {
+    title: "A Meta-analysis of the known Global Distribution and Host Range of the Ralstonia Species Complex",
+    authors: "Lowe-Power​ TM, Avalos J, Bai Y, Munoz MC, Chipman K, Elmgreen VN, Prasad N, Ramirez B, Sandhar A, Tom CE, and Williams D",
+    venue: "bioRxiv",
+    year: 2020,
+    type: "Article",
+    summary: "The Ralstonia species complex is a group of genetically diverse plant wilt pathogens. Our goal is to create a database that contains the reported global distribution and host range of Ralstonia clades (e.g. phylotypes and sequevars).",
+    pdf: "",
+    doi: "https://doi.org/10.1101/2020.07.13.189936",
+    link: "",
   },
 ];
 
 // Profile links shown at the top of the research page ("" hides one).
 const PROFILES = {
   scholar: "",   // Google Scholar profile URL
-  orcid: "",     // e.g. "https://orcid.org/0000-0000-0000-0000"
+  orcid: "https://orcid.org/0009-0004-5441-6885",     // e.g. "https://orcid.org/0000-0000-0000-0000"
   github: "https://github.com/vnelmgreen",
   cv: "",        // e.g. "files/cv.pdf"
 };
@@ -96,7 +140,7 @@ const WISHLIST = [
 
 // The "cheat sheet" box on the wishlist page. Delete anything you'd rather not share.
 const FAVORITES = {
-  "Favorite colors": "pink, sparkly pink, and lilac",
+  "Favorite colors": "pink, orange, and gold",
   "Favorite snacks": "",
   "Favorite stores": "",
   "Shirt size": "",
