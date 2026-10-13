@@ -1,0 +1,387 @@
+/* =========================================================
+   ✨ Vienna's World — main stylesheet ✨
+   Everything cute lives here. Start with the colors below:
+   change a variable once and it updates the whole site.
+   ========================================================= */
+
+:root {
+  /* pinks */
+  --pink-50:  #fff0f7;
+  --pink-100: #ffd6ea;
+  --pink-200: #ffb3d9;
+  --pink-300: #ff8cc6;
+  --pink-400: #ff5fae;
+  --pink-500: #ff1493;   /* same hot pink as the Shiny dashboard */
+  --pink-700: #c2006b;
+  --pink-900: #7a0044;   /* text color: dark enough to read on pink */
+
+  /* accents */
+  --lilac:  #c9a7ff;
+  --sky:    #8fd3ff;
+  --gold:   #ffd84d;
+  --white:  #ffffff;
+
+  --text:      var(--pink-900);
+  --outline:   #8a0050;          /* chunky Webkinz-style outlines */
+  --radius:    22px;
+  --shadow:    0 6px 0 var(--outline), 0 10px 24px rgba(122, 0, 68, .25);
+
+  --font-display: "Chewy", "Comic Sans MS", cursive;
+  --font-body:    "Fredoka", "Trebuchet MS", sans-serif;
+}
+
+/* ---------- base ---------- */
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: 1.08rem;
+  line-height: 1.6;
+  color: var(--text);
+  background-color: var(--pink-200);
+  /* glitter: a few layers of tiny dots at different sizes */
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,.95) 0 1.2px, transparent 2px),
+    radial-gradient(circle at 70% 80%, rgba(255,216,77,.9) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.7) 0 .8px, transparent 1.4px),
+    radial-gradient(circle at 85% 15%, rgba(201,167,255,.9) 0 1.2px, transparent 2px),
+    linear-gradient(160deg, var(--pink-100), var(--pink-300) 55%, var(--lilac));
+  background-size: 37px 41px, 53px 47px, 23px 29px, 61px 67px, 100% 100%;
+  background-attachment: fixed;
+}
+
+/* twinkle layer on top of the glitter */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,1) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle, rgba(255,240,180,1) 0 1px, transparent 2px);
+  background-size: 97px 89px, 131px 113px;
+  background-position: 10px 20px, 60px 40px;
+  animation: twinkle 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  from { opacity: .15; }
+  to   { opacity: .9;  }
+}
+
+a { color: var(--pink-700); font-weight: 600; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+a:hover { color: var(--pink-500); }
+
+img { max-width: 100%; }
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: .5px;
+  line-height: 1.15;
+  color: var(--pink-500);
+  text-shadow:
+    2px 2px 0 var(--white), -2px -2px 0 var(--white),
+    2px -2px 0 var(--white), -2px 2px 0 var(--white),
+    4px 5px 0 var(--outline);
+}
+h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); margin: .2em 0; }
+h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: .4em 0 .3em; }
+h3 { font-size: 1.4rem; margin: .4em 0 .2em; }
+
+/* ---------- layout ---------- */
+
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 16px 48px;
+}
+
+.grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+/* ---------- header + logo ---------- */
+
+.site-header { text-align: center; padding: 28px 0 8px; }
+
+.logo {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 9vw, 4.6rem);
+  line-height: 1;
+  text-decoration: none;
+  color: var(--pink-500);
+  text-shadow:
+    3px 3px 0 var(--white), -3px -3px 0 var(--white),
+    3px -3px 0 var(--white), -3px 3px 0 var(--white),
+    0 3px 0 var(--white), 0 -3px 0 var(--white),
+    6px 8px 0 var(--outline);
+  transform: rotate(-2deg);
+  transition: transform .25s;
+}
+.logo:hover { color: var(--pink-400); transform: rotate(1deg) scale(1.04); }
+.logo .star { display: inline-block; color: var(--gold); animation: spin 4s linear infinite; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.tagline {
+  margin: 10px 0 0;
+  font-weight: 600;
+  color: var(--pink-900);
+}
+
+/* ---------- glossy Webkinz-style buttons ---------- */
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 22px 0 18px;
+}
+
+.btn {
+  position: relative;
+  display: inline-block;
+  padding: 10px 22px 12px;
+  border: 3px solid var(--outline);
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  letter-spacing: .5px;
+  color: var(--white);
+  text-decoration: none;
+  text-shadow: 0 2px 0 var(--outline);
+  background: linear-gradient(to bottom, var(--pink-300), var(--pink-500) 60%, var(--pink-700));
+  box-shadow: 0 5px 0 var(--outline), inset 0 -4px 0 rgba(0,0,0,.12);
+  cursor: pointer;
+  transition: transform .1s, box-shadow .1s, filter .2s;
+}
+/* the shiny highlight across the top */
+.btn::after {
+  content: "";
+  position: absolute;
+  top: 4px; left: 14%; right: 14%;
+  height: 38%;
+  border-radius: 999px;
+  background: linear-gradient(rgba(255,255,255,.85), rgba(255,255,255,.1));
+  pointer-events: none;
+}
+.btn:hover   { color: var(--white); filter: brightness(1.08) saturate(1.15); transform: translateY(-2px); }
+.btn:active  { transform: translateY(4px); box-shadow: 0 1px 0 var(--outline); }
+.btn.is-current { background: linear-gradient(to bottom, #fff59a, var(--gold) 60%, #f5a300); color: var(--outline); text-shadow: 0 1px 0 var(--white); }
+
+.btn-sm { font-size: 1rem; padding: 6px 16px 8px; border-width: 2px; box-shadow: 0 3px 0 var(--outline); }
+.btn-sky   { background: linear-gradient(to bottom, #c7ecff, var(--sky) 60%, #3fa9e6); }
+.btn-lilac { background: linear-gradient(to bottom, #eadbff, var(--lilac) 60%, #9a6ef0); }
+
+/* ---------- scrolling ticker ---------- */
+
+.ticker {
+  overflow: hidden;
+  white-space: nowrap;
+  border: 3px solid var(--outline);
+  border-radius: 999px;
+  background: var(--white);
+  box-shadow: 0 4px 0 var(--outline);
+  margin-bottom: 28px;
+  font-weight: 600;
+}
+.ticker span {
+  display: inline-block;
+  padding: 6px 0 6px 100%;
+  animation: scroll 22s linear infinite;
+}
+@keyframes scroll { to { transform: translateX(-100%); } }
+
+/* ---------- windows (the main content boxes) ---------- */
+
+.window {
+  background: var(--white);
+  border: 4px solid var(--outline);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+.window-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 8px 16px;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--white);
+  text-shadow: 0 2px 0 var(--outline);
+  background:
+    radial-gradient(circle at 12% 30%, rgba(255,255,255,.8) 0 1px, transparent 2px) 0 0 / 18px 14px,
+    linear-gradient(var(--pink-400), var(--pink-500));
+  border-bottom: 4px solid var(--outline);
+}
+.window-title::before { content: "♥"; color: var(--pink-100); }
+.window-title .dots { margin-left: auto; letter-spacing: 4px; font-size: .9rem; }
+.window-body { padding: 18px 22px; }
+.window-body > :first-child { margin-top: 0; }
+.window-body > :last-child  { margin-bottom: 0; }
+
+.window.sky   .window-title { background: linear-gradient(#b8e6ff, var(--sky)); }
+.window.lilac .window-title { background: linear-gradient(#e2d0ff, var(--lilac)); }
+
+/* ---------- pet adoption cards ---------- */
+
+.pet-card {
+  position: relative;
+  text-align: center;
+  background: var(--pink-50);
+  border: 3px dashed var(--pink-400);
+  border-radius: var(--radius);
+  padding: 18px 16px 16px;
+  transition: transform .2s;
+}
+.pet-card:hover { transform: rotate(-1.5deg) scale(1.03); }
+.pet-card .emoji { font-size: 3.4rem; line-height: 1; display: block; }
+.pet-card img { width: 140px; height: 140px; object-fit: cover; border-radius: 50%; border: 4px solid var(--white); box-shadow: 0 0 0 3px var(--pink-400); }
+.pet-card h3 { margin-bottom: 4px; }
+.pet-card .ribbon {
+  position: absolute;
+  top: 10px; right: -6px;
+  padding: 2px 12px;
+  background: var(--gold);
+  color: var(--outline);
+  font-weight: 700;
+  font-size: .8rem;
+  border: 2px solid var(--outline);
+  border-radius: 6px 0 0 6px;
+}
+.pet-facts { list-style: none; padding: 0; margin: 8px 0 0; font-size: .95rem; }
+.pet-facts li { padding: 2px 0; }
+
+/* ---------- stat bubbles ---------- */
+
+.stats { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+.stat {
+  min-width: 130px;
+  text-align: center;
+  padding: 10px 16px;
+  background: var(--pink-50);
+  border: 3px solid var(--pink-400);
+  border-radius: 18px;
+}
+.stat b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 2rem; color: var(--pink-500); }
+
+/* ---------- lists: research, blog, wishlist ---------- */
+
+.item-list { list-style: none; padding: 0; margin: 0; }
+.item-list > li {
+  padding: 14px 0;
+  border-bottom: 3px dotted var(--pink-200);
+}
+.item-list > li:last-child { border-bottom: 0; }
+.item-list .meta { font-size: .9rem; opacity: .85; }
+.item-list .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+.tag {
+  display: inline-block;
+  padding: 0 10px;
+  margin-right: 4px;
+  font-size: .8rem;
+  font-weight: 600;
+  background: var(--pink-100);
+  border-radius: 999px;
+}
+
+.wish-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.wish-filters button { font-family: var(--font-body); }
+.wish-price { font-weight: 700; color: var(--pink-500); }
+.wish-priority { color: var(--gold); text-shadow: 0 1px 0 var(--outline); letter-spacing: 2px; }
+
+.note {
+  padding: 12px 16px;
+  background: #fffbe0;
+  border: 3px solid var(--gold);
+  border-radius: 16px;
+}
+
+/* ---------- blog post body ---------- */
+
+.post-body p { margin: 0 0 1em; }
+.post-body img { border-radius: 16px; border: 4px solid var(--pink-200); }
+.post-body blockquote {
+  margin: 1em 0;
+  padding: 8px 18px;
+  border-left: 6px solid var(--pink-300);
+  background: var(--pink-50);
+  border-radius: 0 16px 16px 0;
+}
+
+/* ---------- embedded dashboard ---------- */
+
+.embed {
+  width: 100%;
+  height: 720px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--pink-50);
+}
+
+/* ---------- footer + 88x31 buttons ---------- */
+
+.site-footer { text-align: center; padding: 10px 0 30px; position: relative; z-index: 1; }
+.badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 12px; }
+.badge {
+  width: 88px; height: 31px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font: 700 10px/1.1 var(--font-body);
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--white);
+  text-decoration: none;
+  border: 2px outset var(--pink-200);
+  background: linear-gradient(var(--pink-400), var(--pink-700));
+}
+.badge:nth-child(2) { background: linear-gradient(var(--lilac), #7b4fd6); border-color: #e2d0ff; }
+.badge:nth-child(3) { background: linear-gradient(var(--sky), #2a8ccf); border-color: #c7ecff; }
+.badge:nth-child(4) { background: linear-gradient(#fff59a, #f5a300); color: var(--outline); border-color: #fffbe0; }
+.badge:hover { color: var(--white); filter: brightness(1.1); }
+
+/* ---------- sparkle cursor trail (made in js/site.js) ---------- */
+
+.sparkle {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  font-size: 16px;
+  transform: translate(-50%, -50%);
+  animation: sparkle-fade .8s ease-out forwards;
+}
+@keyframes sparkle-fade {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  to   { opacity: 0; transform: translate(-50%, 20px) scale(.3) rotate(180deg); }
+}
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 600px) {
+  .window-body { padding: 14px 16px; }
+  .embed { height: 560px; }
+  .btn { font-size: 1.1rem; padding: 8px 16px 10px; }
+}
+
+/* people who've asked their device for less motion get a calmer site */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .ticker span { padding-left: 16px; }
+}
