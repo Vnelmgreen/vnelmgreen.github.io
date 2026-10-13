@@ -195,8 +195,10 @@ function petFromSheet(row) {
 }
 
 function petCard(p, isFavorite) {
-  const pic = safeUrl(p.photo)
-    ? `<img src="${esc(url(safeUrl(p.photo)))}" alt="${esc(p.name)} the ${esc(p.type)}">`
+  const photoKey = Object.keys(PET_PHOTOS).find(k => k.trim().toLowerCase() === String(p.name).trim().toLowerCase());
+  const photo = safeUrl(p.photo || PET_PHOTOS[photoKey]);
+  const pic = photo
+    ? `<img src="${esc(url(photo))}" alt="${esc(p.name)} the ${esc(p.type)}" loading="lazy">`
     : `<span class="emoji" aria-hidden="true">${GROUP_EMOJI[String(p.group).toLowerCase()] || "🌟"}</span>`;
   const sign = String(p.sign || "").toLowerCase();
   const facts = [

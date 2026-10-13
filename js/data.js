@@ -20,6 +20,13 @@ const SITE = {
    Set PETS_SHEET_ID to "" to only use the list below. */
 const PETS_SHEET_ID = "12-oEkPssDf0Qojl0aef_c2Z426LhV9ThtyhoNF3UV4g";
 
+// Pictures for your pets: "Pet Name": "images/pets/file-name".
+// Put the picture files in the images/pets/ folder. (A "Photo" column in
+// your Google Sheet works too, and wins if both are set.)
+const PET_PHOTOS = {
+  "Bubblegum": "images/pets/bubblegum.webp",
+};
+
 // Pets to spotlight at the top of the Webkinz page (use their exact names).
 const FAVORITE_PETS = [];
 
@@ -28,7 +35,6 @@ const PETS = [
   { name: "Bubblegum",  type: "Pink Poodle",    group: "Dog",    gender: "girl", birthday: "June 3",   sign: "Gemini", photo: "" },
   { name: "Sir Purrcy", type: "Persian Cat",    group: "Cat",    gender: "boy",  birthday: "July 28",  sign: "Leo",    photo: "" },
   { name: "Glimmer",    type: "Sparkle Dragon", group: "Dragon", gender: "girl", birthday: "March 14", sign: "Pisces", photo: "" },
-  // photo: "images/pets/bubblegum.jpg"  ← put pictures in images/pets/
 ];
 
 /* ---------- Research ----------

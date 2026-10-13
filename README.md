@@ -31,8 +31,8 @@ then **File → Share → Publish to web → CSV** and paste the link into
 The Webkinz page reads your pets live from your Google Sheet
 (`PETS_SHEET_ID` in `js/data.js`), and the counts and zodiac
 charts are worked out from it automatically, so they stay up to date as you add pets. The sheet needs to be shared as
-"anyone with the link can view". Add a `Photo` column (e.g. `images/pets/bubblegum.jpg`)
-to show pictures instead of emoji. If the sheet can't load, the `PETS` list is used instead.
+"anyone with the link can view". To show a picture instead of an emoji, put it in
+`images/pets/` and add it to `PET_PHOTOS` in `js/data.js` (or add a `Photo` column to the sheet). If the sheet can't load, the `PETS` list is used instead.
 
 ## Previewing on your computer
 
