@@ -101,22 +101,42 @@ function renderFooter() {
 
 function sparkleTrail() {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const shapes = ["✦", "✧", "★", "♥", "·"];
-  const colors = ["#ff1493", "#ffd84d", "#ffffff", "#c9a7ff", "#ff8cc6"];
+  const shapes = ["★", "♥", "✿", "❀", "✦"];
+  const colors = ["#ff1493", "#ffd84d", "#ffffff", "#ff8a5c", "#ff8cc6", "#ffb36b"];
+  const pick = list => list[Math.floor(Math.random() * list.length)];
+
+  function sparkle(x, y, size, cls, dx, dy) {
+    const s = document.createElement("span");
+    s.className = cls;
+    s.textContent = pick(shapes);
+    s.style.left = x + "px";
+    s.style.top = y + "px";
+    s.style.color = pick(colors);
+    s.style.fontSize = size + "px";
+    s.style.setProperty("--dx", dx + "px");
+    s.style.setProperty("--dy", dy + "px");
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1000);
+  }
+
+  // a trail of tiny stars, hearts and flowers that drift down off the wand tip
   let last = 0;
   document.addEventListener("pointermove", e => {
+    if (e.pointerType !== "mouse") return;
     const now = performance.now();
-    if (now - last < 45) return;
+    if (now - last < 40) return;
     last = now;
-    const s = document.createElement("span");
-    s.className = "sparkle";
-    s.textContent = shapes[Math.floor(Math.random() * shapes.length)];
-    s.style.left = e.clientX + "px";
-    s.style.top = e.clientY + "px";
-    s.style.color = colors[Math.floor(Math.random() * colors.length)];
-    s.style.fontSize = 10 + Math.random() * 12 + "px";
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 800);
+    sparkle(e.clientX, e.clientY, 10 + Math.random() * 8, "sparkle", (Math.random() - .5) * 24, 18 + Math.random() * 22);
+  });
+
+  // a burst of sparkles on every click or tap
+  document.addEventListener("pointerdown", e => {
+    const count = 12;
+    for (let k = 0; k < count; k++) {
+      const angle = (k / count) * Math.PI * 2 + Math.random() * .4;
+      const dist = 40 + Math.random() * 40;
+      sparkle(e.clientX, e.clientY, 13 + Math.random() * 9, "sparkle burst", Math.cos(angle) * dist, Math.sin(angle) * dist);
+    }
   });
 }
 
@@ -147,7 +167,7 @@ function renderResearch() {
       const buttons = [
         ["pdf", "📄 PDF", ""],
         ["doi", "🔗 DOI", "btn-sky"],
-        ["link", "✨ More", "btn-lilac"],
+        ["link", "✨ More", "btn-peach"],
       ].filter(([key]) => safeUrl(r[key]))
        .map(([key, label, cls]) => `<a class="btn btn-sm ${cls}" href="${esc(url(safeUrl(r[key])))}">${label}</a>`)
        .join("");
@@ -164,7 +184,7 @@ function renderResearch() {
     const labels = { scholar: "🎓 Google Scholar", orcid: "🆔 ORCID", github: "💻 GitHub", cv: "📝 CV" };
     prof.innerHTML = Object.entries(PROFILES)
       .filter(([, href]) => safeUrl(href))
-      .map(([key, href]) => `<a class="btn btn-sm btn-lilac" href="${esc(url(safeUrl(href)))}">${labels[key] || esc(key)}</a>`)
+      .map(([key, href]) => `<a class="btn btn-sm btn-peach" href="${esc(url(safeUrl(href)))}">${labels[key] || esc(key)}</a>`)
       .join("");
   }
 }
@@ -187,16 +207,21 @@ function petFromSheet(row) {
     type: row["pet type"],
     group: row["pet group"],
     gender: row["gender"],
-    birthday: row["birthday"] || [row["birth month"]].filter(Boolean).join(" "),
+    birthday: row["birthday"] || row["adoption day"] || [row["birth month"]].filter(Boolean).join(" "),
     sign: row["zodiac sign"],
     element: row["zodiac element"],
     photo: row["photo"] || "",
   };
 }
 
+// A pet's picture: the sheet's Photo column, or PET_PHOTOS in data.js (matched by name).
+function photoFor(p) {
+  const key = Object.keys(PET_PHOTOS).find(k => k.trim().toLowerCase() === String(p.name).trim().toLowerCase());
+  return safeUrl(p.photo || PET_PHOTOS[key]);
+}
+
 function petCard(p, isFavorite) {
-  const photoKey = Object.keys(PET_PHOTOS).find(k => k.trim().toLowerCase() === String(p.name).trim().toLowerCase());
-  const photo = safeUrl(p.photo || PET_PHOTOS[photoKey]);
+  const photo = photoFor(p);
   const pic = photo
     ? `<img src="${esc(url(photo))}" alt="${esc(p.name)} the ${esc(p.type)}" loading="lazy">`
     : `<span class="emoji" aria-hidden="true">${GROUP_EMOJI[String(p.group).toLowerCase()] || "🌟"}</span>`;
@@ -239,19 +264,73 @@ function showPets(pets) {
   renderPetCharts(pets);
 }
 
+// Load the pets once (from the Google Sheet, or data.js if that fails) and share them.
+let petsPromise;
+function loadPets() {
+  petsPromise ??= (async () => {
+    if (PETS_SHEET_ID) {
+      try {
+        const res = await fetch(`https://docs.google.com/spreadsheets/d/${encodeURIComponent(PETS_SHEET_ID)}/gviz/tq?tqx=out:csv`);
+        if (!res.ok) throw new Error(res.status);
+        const pets = parseCSV(await res.text()).map(petFromSheet).filter(p => p.name);
+        if (pets.length) return pets;
+      } catch (err) {
+        console.warn("Couldn't load pets from Google Sheets, using data.js instead.", err);
+      }
+    }
+    return PETS;
+  })();
+  return petsPromise;
+}
+
 async function renderPets() {
   if (!$("pet-grid")) return;
-  if (PETS_SHEET_ID) {
-    try {
-      const res = await fetch(`https://docs.google.com/spreadsheets/d/${encodeURIComponent(PETS_SHEET_ID)}/gviz/tq?tqx=out:csv`);
-      if (!res.ok) throw new Error(res.status);
-      const pets = parseCSV(await res.text()).map(petFromSheet).filter(p => p.name);
-      if (pets.length) return showPets(pets);
-    } catch (err) {
-      console.warn("Couldn't load pets from Google Sheets, using data.js instead.", err);
-    }
-  }
-  showPets(PETS);
+  showPets(await loadPets());
+}
+
+/* ---------- birthday banner (home page) ---------- */
+
+const MONTHS = ["january", "february", "march", "april", "may", "june", "july",
+  "august", "september", "october", "november", "december"];
+
+// Understands "June 3", "Jun 3rd", "3 June", "6/3", "6/3/2010" and "2010-06-03".
+function parseBirthday(text) {
+  const t = String(text || "").trim().toLowerCase();
+  if (!t) return null;
+  let m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return { month: +m[2], day: +m[3] };
+  m = t.match(/^(\d{1,2})\/(\d{1,2})(\/\d{2,4})?$/);
+  if (m) return { month: +m[1], day: +m[2] };
+  const month = MONTHS.findIndex(name => t.includes(name.slice(0, 3))) + 1;
+  const day = t.match(/\b(\d{1,2})(st|nd|rd|th)?\b/);
+  return month && day ? { month, day: +day[1] } : null;
+}
+
+async function renderBirthdays() {
+  const el = $("birthday-banner");
+  if (!el) return;
+  const today = new Date();
+  const pets = (await loadPets()).filter(p => {
+    const b = parseBirthday(p.birthday);
+    return b && b.month === today.getMonth() + 1 && b.day === today.getDate();
+  });
+  if (!pets.length) return;
+  const names = pets.map(p => esc(p.name));
+  const list = names.length === 1 ? names[0] : names.slice(0, -1).join(", ") + " and " + names.at(-1);
+  const pics = pets.map(p => {
+    const photo = photoFor(p);
+    return photo
+      ? `<img src="${esc(url(photo))}" alt="${esc(p.name)}">`
+      : `<span class="emoji" aria-hidden="true">${GROUP_EMOJI[String(p.group).toLowerCase()] || "🌟"}</span>`;
+  }).join("");
+  el.innerHTML = `
+    <section class="window birthday" aria-live="polite">
+      <h2 class="window-title">It's a birthday! <span class="dots" aria-hidden="true">🎈 🎁 🎈</span></h2>
+      <div class="window-body">
+        <div class="birthday-pics">${pics}</div>
+        <p class="birthday-text">🎂 Happy birthday, ${list}! 🎂</p>
+      </div>
+    </section>`;
 }
 
 /* ---------- webkinz charts (built from the same pet list as the cards) ---------- */
@@ -425,5 +504,6 @@ sparkleTrail();
 renderPosts();
 renderResearch();
 renderPets();
+renderBirthdays();
 renderWishlist();
 renderFavorites();
