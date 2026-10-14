@@ -10,7 +10,7 @@ const SITE = {
   tagline: "pets ♥ research ♥ thoughts ♥ wishes",
   // the scrolling message under the menu
   // birthday banner look: "ribbon", "pennant" or "strip"
-  birthdayStyle: "ribbon",
+  birthdayStyle: "strip",
   ticker: "✨ Welcome to my little corner of the internet! ✨ Say hi to my Webkinz ♥ Check out my research ♥ Peek at my wishlist before birthdays 🎁 ✨",
 };
 

@@ -7,10 +7,11 @@ Plain HTML/CSS/JS, hosted free on GitHub Pages at **https://vnelmgreen.github.io
 
 | I want to… | Edit |
 |---|---|
-| Add a pet, paper, blog post or wishlist item | `js/data.js` |
+| Add a pet, paper, blog post, hobby item or wishlist item | `js/data.js` |
+| Pick the birthday banner look ("ribbon", "pennant" or "strip") | `birthdayStyle` in `js/data.js` |
+| Change the menu or the Kinzville sign names | `NAV` at the top of `js/site.js` |
 | Change colors, fonts, glitter, buttons | `css/style.css` (colors are at the very top) |
 | Change the words on a page | that page's `.html` file |
-| Change the menu | `NAV` at the top of `js/site.js` |
 | Add photos | `images/` (pet photos in `images/pets/`) |
 | Add PDFs (papers, CV) | `files/` |
 
@@ -19,6 +20,10 @@ Plain HTML/CSS/JS, hosted free on GitHub Pages at **https://vnelmgreen.github.io
 1. Copy `blog/posts/2026-10-13-hello-world.html` and rename it, e.g. `2026-11-01-my-trip.html`.
 2. Change the title, date and words.
 3. Add it to the top of `POSTS` in `js/data.js`.
+
+For a post written by one of your Webkinz, copy `blog/posts/_template-pet-post.html`
+instead and add `author: "Piggy"` to its entry. Add `series: "Connections", number: 1`
+to put a post in the Connections Collection on the blog page.
 
 ## Wishlist from a Google Sheet (optional)
 

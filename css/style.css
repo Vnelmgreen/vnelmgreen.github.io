@@ -47,18 +47,35 @@ body {
   font-size: 1.08rem;
   line-height: 1.6;
   color: var(--text);
-  background-color: #f2385a;
+  background-color: #ff6f8e;
+  /* glitter flecks over a pink → coral → orange gradient */
+  background-image:
+    url("../images/bg/glitter.png"),
+    linear-gradient(150deg, #ff4fa3 0%, #ff6f8e 35%, var(--coral) 60%, #ff9a52 85%, var(--peach) 100%);
+  background-size: 256px 256px, 100% 100%;
+  background-attachment: scroll, fixed;
   cursor: url("../images/cursors/wand.png") 6 6, auto;
 }
 
-/* nostalgic animated glitter tile over the whole page */
-body::before {
+/* twinkle layers: two sets of star glints fading in and out at different times */
+body::before, body::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  background: url("../images/bg/glitter-red.gif") 0 0 / 240px 120px;
+  background: url("../images/bg/glints.png") 0 0 / 256px 256px;
+  animation: twinkle 2.6s ease-in-out infinite alternate;
+}
+body::after {
+  background-position: 128px 90px;
+  background-size: 200px 200px;
+  animation-delay: -1.3s;
+}
+
+@keyframes twinkle {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 a, button, summary, [tabindex], .btn { cursor: url("../images/cursors/wand.png") 6 6, pointer; }
