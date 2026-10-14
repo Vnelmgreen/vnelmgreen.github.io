@@ -25,6 +25,9 @@ const PETS_SHEET_ID = "12-oEkPssDf0Qojl0aef_c2Z426LhV9ThtyhoNF3UV4g";
 // your Google Sheet works too, and wins if both are set.)
 const PET_PHOTOS = {
   "Bubble Gum": "images/pets/bubblegum.webp",
+  "Blueberry": "images/pets/blueberry.webp",
+  "LillyPad": "images/pets/lillypad.webp",
+  "Piggy": "images/pets/piggy.webp",
 };
 
 // Pets to spotlight at the top of the Webkinz page (use their exact names).
