@@ -11,7 +11,6 @@ const NAV = [
   { page: "research", text: "Research", href: "research.html",   place: "Kinzville Academy" },
   { page: "blog",     text: "Blog",     href: "blog/index.html", place: "Webkinz Newz" },
   { page: "hobbies",  text: "Hobbies",  href: "hobbies.html",    place: "the Curio Shop" },
-  { page: "arcade",   text: "Arcade",   href: "arcade.html",     place: "the Arcade" },
   { page: "wishlist", text: "Wishlist", href: "wishlist.html",   place: "the Wish Factory" },
 ];
 
@@ -189,6 +188,7 @@ function fireworks() {
   }
 
   document.addEventListener("pointerdown", e => {
+    if (e.target.closest("#snowglobe")) return;   // the snowglobe has its own fun
     const main = colors[Math.floor(Math.random() * colors.length)];
     burst(e.clientX, e.clientY, 30, 6.5, main, 70);      // the big ring, one color
     burst(e.clientX, e.clientY, 18, 3.5, null, 55);        // a mixed-color inner ring
@@ -411,7 +411,7 @@ async function renderBirthdays() {
   const confetti = Array.from({ length: 24 }, (_, k) =>
     `<i style="left:${(k * 37) % 100}%;animation-delay:${(k * .37) % 3}s;animation-duration:${3 + (k % 4)}s"></i>`).join("");
   el.innerHTML = `
-    <section class="bday" aria-live="polite">
+    <section class="bday bday-${esc(SITE.birthdayStyle || "ribbon")}" aria-live="polite">
       <div class="bunting" aria-hidden="true">${flags}</div>
       <div class="confetti" aria-hidden="true">${confetti}</div>
       <div class="ribbon"><span>It's ${pets.length === 1 ? "my" : "our"} birthday!</span></div>

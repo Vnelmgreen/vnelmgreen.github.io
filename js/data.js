@@ -9,6 +9,8 @@ const SITE = {
   name: "Vienna's World",
   tagline: "pets ♥ research ♥ thoughts ♥ wishes",
   // the scrolling message under the menu
+  // birthday banner look: "ribbon", "pennant" or "strip"
+  birthdayStyle: "ribbon",
   ticker: "✨ Welcome to my little corner of the internet! ✨ Say hi to my Webkinz ♥ Check out my research ♥ Peek at my wishlist before birthdays 🎁 ✨",
 };
 
@@ -129,8 +131,8 @@ const PROFILES = {
    Optional extras for an entry:
      author: "Piggy"              ← a pet wrote it: shows their picture + "by Piggy"
      series: "Snack Reviews"      ← part of a series, shown as a little label
-     series: "Connections", number: 1   ← goes in the Connections Collection
-                                         on the hobbies page as "Connections #1" */
+     series: "Connections", number: 1   ← also listed in the Connections Collection
+                                         on the blog page as "Connections #1" */
 const POSTS = [
   {
     title: "Hello, world! ✨",
@@ -156,7 +158,7 @@ const WISHLIST = [
 ];
 
 /* ---------- Hobbies page (the Curio Shop) ----------
-   shelf must be "Crafts", "Snowglobes" or "Dinosaurs".
+   shelf must be "Crafts", "Dinosaurs" or "Misc".
    Put the photos in images/hobbies/. */
 const CURIOS = [
   // { shelf: "Crafts", title: "Friendship bracelet", photo: "images/hobbies/bracelet.jpg", note: "Made for my sister!" },
