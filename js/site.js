@@ -262,13 +262,14 @@ const ZODIAC = [
   ["Sagittarius", "fire"], ["Capricorn", "earth"], ["Aquarius", "air"], ["Pisces", "water"],
 ];
 const ELEMENTS = [
-  { key: "fire",  name: "Fire",  emoji: "🔥", color: "#f24000" },
-  { key: "earth", name: "Earth", emoji: "🌱", color: "#00a070" },
-  { key: "air",   name: "Air",   emoji: "🌬️", color: "#e09000" },
-  { key: "water", name: "Water", emoji: "💧", color: "#007ba5" },
+  { key: "fire",  name: "Fire",  icon: "images/icons/fire.gif", color: "#f24000" },
+  { key: "earth", name: "Earth", icon: "images/icons/earth.gif", color: "#00a070" },
+  { key: "air",   name: "Air",   icon: "images/icons/air.gif", color: "#e09000" },
+  { key: "water", name: "Water", icon: "images/icons/water.gif", color: "#007ba5" },
 ];
 const elementOf = sign => (ZODIAC.find(([s]) => s.toLowerCase() === String(sign).trim().toLowerCase()) || [])[1];
 const elementInfo = key => ELEMENTS.find(e => e.key === key);
+const elementIcon = e => `<img class="el-icon" src="${url(e.icon)}" alt="" aria-hidden="true">`;
 const plural = n => `${n} pet${n === 1 ? "" : "s"}`;
 
 // Round the top of the chart up to a tidy number and pick gridline spacing.
@@ -296,7 +297,7 @@ function dataTable(caption, rows) {
 
 function elementLegend() {
   return `<ul class="legend">${ELEMENTS.map(e =>
-    `<li><span class="swatch" style="--c:${e.color}"></span>${e.emoji} ${e.name}</li>`).join("")}</ul>`;
+    `<li><span class="swatch" style="--c:${e.color}"></span>${elementIcon(e)} ${e.name}</li>`).join("")}</ul>`;
 }
 
 function renderSignChart(pets) {
@@ -333,7 +334,7 @@ function renderElementChart(pets) {
   el.innerHTML = `<div class="hbar-chart">${ELEMENTS.map(e => {
       const n = counts.get(e.key) || 0;
       return `<div class="hbar-row" tabindex="0" data-tip="${e.name}: ${plural(n)}">
-          <span class="hbar-label">${e.emoji} ${e.name}</span>
+          <span class="hbar-label">${elementIcon(e)} ${e.name}</span>
           <div class="hbar-track"><div class="hbar" style="width:${n / max * 100}%;--c:${e.color}"></div></div>
           <span class="hbar-value">${n}</span>
         </div>`;

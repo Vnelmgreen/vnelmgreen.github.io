@@ -385,8 +385,9 @@ h3 { font-size: 1.4rem; margin: .4em 0 .2em; }
 .bar-label .name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 
 .hbar-chart { display: grid; gap: 10px; }
-.hbar-row { display: grid; grid-template-columns: 6.5em 1fr 2em; align-items: center; gap: 8px; }
-.hbar-label { font-weight: 600; }
+.hbar-row { display: grid; grid-template-columns: 7.5em 1fr 2em; align-items: center; gap: 8px; }
+.hbar-label { display: flex; align-items: center; gap: 4px; font-weight: 600; }
+.el-icon { width: 28px; height: 28px; object-fit: contain; image-rendering: pixelated; vertical-align: middle; }
 .hbar-track { height: 26px; border-radius: 999px; background: var(--pink-50); border: 2px solid var(--pink-200); overflow: hidden; }
 .hbar {
   height: 100%;
