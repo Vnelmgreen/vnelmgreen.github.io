@@ -4,12 +4,15 @@
    the menu links are in NAV just below.
    ========================================================= */
 
+// text = the menu button, place = the Kinzville sign shown at the top of that page
 const NAV = [
-  { page: "home",     text: "Home",     href: "index.html" },
-  { page: "webkinz",  text: "Webkinz",  href: "webkinz.html" },
-  { page: "research", text: "Research", href: "research.html" },
-  { page: "blog",     text: "Blog",     href: "blog/index.html" },
-  { page: "wishlist", text: "Wishlist", href: "wishlist.html" },
+  { page: "home",     text: "Home",     href: "index.html",      place: "the Clubhouse" },
+  { page: "webkinz",  text: "Webkinz",  href: "webkinz.html",    place: "the Adoption Center" },
+  { page: "research", text: "Research", href: "research.html",   place: "Kinzville Academy" },
+  { page: "blog",     text: "Blog",     href: "blog/index.html", place: "Webkinz Newz" },
+  { page: "hobbies",  text: "Hobbies",  href: "hobbies.html",    place: "the Curio Shop" },
+  { page: "arcade",   text: "Arcade",   href: "arcade.html",     place: "the Arcade" },
+  { page: "wishlist", text: "Wishlist", href: "wishlist.html",   place: "the Wish Factory" },
 ];
 
 // Pages in subfolders set data-root="../" (or "../../") on <body> so links still work.
@@ -73,13 +76,15 @@ function renderHeader() {
   const buttons = NAV.map(n =>
     `<a class="btn${n.page === CURRENT ? " is-current" : ""}" href="${url(n.href)}"${n.page === CURRENT ? ' aria-current="page"' : ""}>${esc(n.text)}</a>`
   ).join("");
+  const place = (NAV.find(n => n.page === CURRENT) || {}).place;
   el.innerHTML = `
     <header class="site-header">
       <a class="logo" href="${url("index.html")}"><span class="star" aria-hidden="true">★</span> ${esc(SITE.name)} <span class="star" aria-hidden="true">★</span></a>
       <p class="tagline">${esc(SITE.tagline)}</p>
       <nav class="nav" aria-label="Main menu">${buttons}</nav>
     </header>
-    <div class="ticker" aria-hidden="true"><span>${esc(SITE.ticker)}</span></div>`;
+    <div class="ticker" aria-hidden="true"><span>${esc(SITE.ticker)}</span></div>
+    ${place ? `<p class="kinz-sign">Welcome to ${esc(place)}!</p>` : ""}`;
 }
 
 function renderFooter() {
@@ -129,24 +134,85 @@ function sparkleTrail() {
     sparkle(e.clientX, e.clientY, 10 + Math.random() * 8, "sparkle", (Math.random() - .5) * 24, 18 + Math.random() * 22);
   });
 
-  // a burst of sparkles on every click or tap
-  document.addEventListener("pointerdown", e => {
-    const count = 12;
+  fireworks();
+}
+
+// Every click or tap sets off a little firework: sparks fly out, then fall and fade.
+function fireworks() {
+  const canvas = document.createElement("canvas");
+  canvas.className = "fireworks";
+  canvas.setAttribute("aria-hidden", "true");
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
+  const colors = ["#ff1493", "#ffc400", "#ff6a3d", "#ff5fae", "#09a8ff", "#00c27a", "#b05cff"];
+  let sparks = [], running = false, dpr = 1;
+
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    canvas.width = innerWidth * dpr;
+    canvas.height = innerHeight * dpr;
+  }
+  resize();
+  addEventListener("resize", resize);
+
+  function burst(x, y, count, speed, color, life) {
     for (let k = 0; k < count; k++) {
-      const angle = (k / count) * Math.PI * 2 + Math.random() * .4;
-      const dist = 40 + Math.random() * 40;
-      sparkle(e.clientX, e.clientY, 13 + Math.random() * 9, "sparkle burst", Math.cos(angle) * dist, Math.sin(angle) * dist);
+      const angle = (k / count) * Math.PI * 2 + Math.random() * .2;
+      const v = speed * (.6 + Math.random() * .5);
+      sparks.push({ x, y, px: x, py: y, vx: Math.cos(angle) * v, vy: Math.sin(angle) * v,
+        life, age: 0, color: color || colors[Math.floor(Math.random() * colors.length)],
+        size: 2 + Math.random() * 1.6, crackle: Math.random() < .25 });
     }
+  }
+
+  function frame() {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    sparks = sparks.filter(s => s.age < s.life);
+    for (const s of sparks) {
+      s.px = s.x; s.py = s.y;
+      s.vx *= .96; s.vy = s.vy * .96 + .09;   // air drag + gravity
+      s.x += s.vx; s.y += s.vy; s.age++;
+      const fade = 1 - s.age / s.life;
+      const twinkle = s.crackle && s.age > s.life * .5 ? (Math.random() < .5 ? 0 : 1) : 1;
+      ctx.globalAlpha = fade * twinkle;
+      ctx.strokeStyle = ctx.fillStyle = s.color;
+      ctx.shadowColor = s.color === "#ffffff" ? "#ff1493" : "rgba(122, 0, 68, .6)";
+      ctx.shadowBlur = 4;
+      ctx.lineWidth = s.size;
+      ctx.beginPath(); ctx.moveTo(s.px, s.py); ctx.lineTo(s.x, s.y); ctx.stroke();
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.size * .9, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    if (sparks.length) requestAnimationFrame(frame);
+    else { running = false; ctx.clearRect(0, 0, innerWidth, innerHeight); }
+  }
+
+  document.addEventListener("pointerdown", e => {
+    const main = colors[Math.floor(Math.random() * colors.length)];
+    burst(e.clientX, e.clientY, 30, 6.5, main, 70);      // the big ring, one color
+    burst(e.clientX, e.clientY, 18, 3.5, null, 55);        // a mixed-color inner ring
+    burst(e.clientX, e.clientY, 8, 1.4, "#ffffff", 35);  // a white-hot center
+    if (!running) { running = true; requestAnimationFrame(frame); }
   });
 }
 
 /* ---------- blog ---------- */
 
+// Who wrote it: a pet's name in "author" shows their picture and a byline.
+function authorLine(p) {
+  if (!p.author) return "";
+  const photo = photoFor({ name: p.author });
+  const pic = photo ? `<img class="author-pic" src="${esc(url(photo))}" alt="">` : "✍️";
+  return `<span class="author">${pic} by ${esc(p.author)}</span>`;
+}
+
 function postItem(p) {
   const tags = (p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("");
+  const series = p.series ? `<span class="series">${esc(p.series)}${p.number ? ` #${esc(p.number)}` : ""}</span> ` : "";
   return `<li>
-      <h3><a href="${esc(url(safeUrl(p.url)))}">${esc(p.title)}</a></h3>
-      <div class="meta">${esc(prettyDate(p.date))} ${tags}</div>
+      <h3>${series}<a href="${esc(url(safeUrl(p.url)))}">${esc(p.title)}</a></h3>
+      <div class="meta">${esc(prettyDate(p.date))} ${authorLine(p)} ${tags}</div>
       <p>${esc(p.summary)}</p>
     </li>`;
 }
@@ -154,8 +220,26 @@ function postItem(p) {
 function renderPosts() {
   const all = $("post-list");
   if (all) all.innerHTML = POSTS.length ? POSTS.map(postItem).join("") : "<li>No posts yet, check back soon! ✨</li>";
+  // the Connections Collection on the hobbies page (and any other series list)
+  document.querySelectorAll("[data-series]").forEach(list => {
+    const posts = POSTS.filter(p => p.series === list.dataset.series)
+      .sort((a, b) => (Number(a.number) || 0) - (Number(b.number) || 0));
+    list.innerHTML = posts.map(postItem).join("") || `<li>${esc(list.dataset.empty || "Nothing here yet ✨")}</li>`;
+  });
   const latest = $("latest-posts");
   if (latest) latest.innerHTML = POSTS.slice(0, 3).map(postItem).join("") || "<li>Coming soon ✨</li>";
+}
+
+/* ---------- hobbies page shelves ---------- */
+
+function renderCurios() {
+  document.querySelectorAll("[data-shelf]").forEach(shelf => {
+    const items = CURIOS.filter(c => c.shelf === shelf.dataset.shelf);
+    shelf.innerHTML = items.map(c => `<figure>
+        ${safeUrl(c.photo) ? `<img src="${esc(url(safeUrl(c.photo)))}" alt="${esc(c.title)}" loading="lazy">` : ""}
+        <figcaption><b>${esc(c.title)}</b>${c.note ? `<br>${esc(c.note)}` : ""}</figcaption>
+      </figure>`).join("") || `<p>${esc(shelf.dataset.empty)}</p>`;
+  });
 }
 
 /* ---------- research ---------- */
@@ -323,13 +407,16 @@ async function renderBirthdays() {
       ? `<img src="${esc(url(photo))}" alt="${esc(p.name)}">`
       : `<span class="emoji" aria-hidden="true">${GROUP_EMOJI[String(p.group).toLowerCase()] || "🌟"}</span>`;
   }).join("");
+  const flags = Array.from({ length: 13 }, (_, k) => `<span class="flag f${k % 5}"></span>`).join("");
+  const confetti = Array.from({ length: 24 }, (_, k) =>
+    `<i style="left:${(k * 37) % 100}%;animation-delay:${(k * .37) % 3}s;animation-duration:${3 + (k % 4)}s"></i>`).join("");
   el.innerHTML = `
-    <section class="window birthday" aria-live="polite">
-      <h2 class="window-title">It's a birthday! <span class="dots" aria-hidden="true">🎈 🎁 🎈</span></h2>
-      <div class="window-body">
-        <div class="birthday-pics">${pics}</div>
-        <p class="birthday-text">🎂 Happy birthday, ${list}! 🎂</p>
-      </div>
+    <section class="bday" aria-live="polite">
+      <div class="bunting" aria-hidden="true">${flags}</div>
+      <div class="confetti" aria-hidden="true">${confetti}</div>
+      <div class="ribbon"><span>It's ${pets.length === 1 ? "my" : "our"} birthday!</span></div>
+      <div class="birthday-pics">${pics}</div>
+      <p class="birthday-text">🎂 Happy birthday, ${list}! 🎂</p>
     </section>`;
 }
 
@@ -503,6 +590,7 @@ renderFooter();
 sparkleTrail();
 renderPosts();
 renderResearch();
+renderCurios();
 renderPets();
 renderBirthdays();
 renderWishlist();

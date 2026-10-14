@@ -18,6 +18,8 @@ const SITE = {
    charts and counts are worked out from it automatically. If that
    ever fails, it shows the PETS list below instead.
    Set PETS_SHEET_ID to "" to only use the list below. */
+// Birthdays come from the sheet's Birthday column, written like "June 3".
+// (If a pet's Birthday is empty, its Adoption Day is used instead.)
 const PETS_SHEET_ID = "12-oEkPssDf0Qojl0aef_c2Z426LhV9ThtyhoNF3UV4g";
 
 // Pictures for your pets: "Pet Name": "images/pets/file-name".
@@ -121,8 +123,14 @@ const PROFILES = {
 
 /* ---------- Blog ----------
    1. Copy blog/posts/2026-10-13-hello-world.html to a new file
+      (or blog/posts/_template-pet-post.html for a post written by a pet)
    2. Write your post in it
-   3. Add an entry here (newest first) */
+   3. Add an entry here (newest first)
+   Optional extras for an entry:
+     author: "Piggy"              ← a pet wrote it: shows their picture + "by Piggy"
+     series: "Snack Reviews"      ← part of a series, shown as a little label
+     series: "Connections", number: 1   ← goes in the Connections Collection
+                                         on the hobbies page as "Connections #1" */
 const POSTS = [
   {
     title: "Hello, world! ✨",
@@ -145,6 +153,13 @@ const WISHLIST = [
   { item: "A new Webkinz plush (any pink one!)", link: "", price: "$15", category: "Webkinz", priority: 3, notes: "Check my Webkinz page so you don't get one I already have" },
   { item: "Cozy fuzzy socks",                    link: "", price: "$10", category: "Cozy",    priority: 2, notes: "" },
   { item: "A book you loved",                    link: "", price: "",    category: "Books",   priority: 1, notes: "Write a note inside the cover!" },
+];
+
+/* ---------- Hobbies page (the Curio Shop) ----------
+   shelf must be "Crafts", "Snowglobes" or "Dinosaurs".
+   Put the photos in images/hobbies/. */
+const CURIOS = [
+  // { shelf: "Crafts", title: "Friendship bracelet", photo: "images/hobbies/bracelet.jpg", note: "Made for my sister!" },
 ];
 
 // The "cheat sheet" box on the wishlist page. Delete anything you'd rather not share.
