@@ -586,6 +586,9 @@ h3 { font-size: 1.4rem; margin: .4em 0 .2em; }
 .bday-strip .ribbon span { padding: 0; background: none; border: 0; color: var(--pink-500); text-shadow: var(--title-shadow); font-size: clamp(1.4rem, 4vw, 2rem); }
 .bday-strip .birthday-text { grid-area: text; margin: 0; font-size: clamp(1.1rem, 3vw, 1.4rem); }
 
+.check-table { border-collapse: collapse; font-size: .9rem; }
+.check-table th, .check-table td { padding: 3px 12px 3px 0; text-align: left; border-bottom: 1px dotted var(--pink-200); }
+
 /* ---------- blog extras: pet authors and numbered series ---------- */
 
 .author { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }

@@ -285,16 +285,24 @@ const SIGN_EMOJI = {
 };
 
 // Turn a row from the Google Sheet (columns like "Pet Name", "Pet Type") into a pet.
+// Find a column by any of its likely names (capitals and extra spaces don't matter).
+function column(row, ...names) {
+  const key = Object.keys(row).find(k => names.includes(k.replace(/\s+/g, " ").trim()));
+  return key ? row[key] : "";
+}
+
 function petFromSheet(row) {
   return {
-    name: row["pet name"],
-    type: row["pet type"],
-    group: row["pet group"],
-    gender: row["gender"],
-    birthday: row["birthday"] || row["adoption day"] || [row["birth month"]].filter(Boolean).join(" "),
-    sign: row["zodiac sign"],
-    element: row["zodiac element"],
-    photo: row["photo"] || "",
+    name: column(row, "pet name", "name"),
+    type: column(row, "pet type", "type"),
+    group: column(row, "pet group", "group"),
+    gender: column(row, "gender"),
+    birthday: column(row, "birthday", "birth day", "birthdate", "bday"),
+    adoptionDay: column(row, "adoption day", "adoption date", "adopted"),
+    birthMonth: column(row, "birth month"),
+    sign: column(row, "zodiac sign", "sign"),
+    element: column(row, "zodiac element", "element"),
+    photo: column(row, "photo", "picture"),
   };
 }
 
@@ -313,7 +321,7 @@ function petCard(p, isFavorite) {
   const facts = [
     p.type && `🐾 ${esc(p.type)}`,
     p.gender && `${String(p.gender).toLowerCase() === "girl" ? "♀" : "♂"} ${esc(p.gender)}`,
-    p.birthday && `🎂 ${esc(p.birthday)}`,
+    (p.birthday || p.adoptionDay) && `🎂 ${esc(p.birthday || p.adoptionDay)}`,
     p.sign && `${SIGN_EMOJI[sign] || "✨"} ${esc(p.sign)}`,
   ].filter(Boolean).map(f => `<li>${f}</li>`).join("");
   return `<div class="pet-card">
@@ -353,14 +361,24 @@ let petsPromise;
 function loadPets() {
   petsPromise ??= (async () => {
     if (PETS_SHEET_ID) {
-      try {
-        const res = await fetch(`https://docs.google.com/spreadsheets/d/${encodeURIComponent(PETS_SHEET_ID)}/gviz/tq?tqx=out:csv`);
-        if (!res.ok) throw new Error(res.status);
-        const pets = parseCSV(await res.text()).map(petFromSheet).filter(p => p.name);
-        if (pets.length) return pets;
-      } catch (err) {
-        console.warn("Couldn't load pets from Google Sheets, using data.js instead.", err);
+      const id = encodeURIComponent(PETS_SHEET_ID);
+      // The plain CSV export keeps every cell exactly as typed. The gviz link is a backup,
+      // told that row 1 is the header (otherwise it sometimes guesses wrong).
+      const sources = [
+        `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`,
+        `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&headers=1`,
+      ];
+      for (const src of sources) {
+        try {
+          const res = await fetch(src);
+          if (!res.ok) throw new Error(res.status);
+          const pets = parseCSV(await res.text()).map(petFromSheet).filter(p => p.name);
+          if (pets.length) return pets;
+        } catch (err) {
+          console.warn("Couldn't load pets from " + src, err);
+        }
       }
+      console.warn("Couldn't load pets from Google Sheets, using data.js instead.");
     }
     return PETS;
   })();
@@ -377,17 +395,34 @@ async function renderPets() {
 const MONTHS = ["january", "february", "march", "april", "may", "june", "july",
   "august", "september", "october", "november", "december"];
 
-// Understands "June 3", "Jun 3rd", "3 June", "6/3", "6/3/2010" and "2010-06-03".
+// Understands "June 3", "Jun 3rd", "3 June", "Oct-15", "10/15", "10/15/2009", "10/15/2009 0:00:00"
+// and "2009-10-15".
 function parseBirthday(text) {
   const t = String(text || "").trim().toLowerCase();
   if (!t) return null;
   let m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (m) return { month: +m[2], day: +m[3] };
-  m = t.match(/^(\d{1,2})\/(\d{1,2})(\/\d{2,4})?$/);
+  m = t.match(/^(\d{1,2})[\/.-](\d{1,2})(?![\d])/);
   if (m) return { month: +m[1], day: +m[2] };
   const month = MONTHS.findIndex(name => t.includes(name.slice(0, 3))) + 1;
-  const day = t.match(/\b(\d{1,2})(st|nd|rd|th)?\b/);
+  const day = t.match(/(?:^|[^\d])(\d{1,2})(?:st|nd|rd|th)?(?![\d])/);
   return month && day ? { month, day: +day[1] } : null;
+}
+
+// A pet's birthday: the Birthday column when it can be read, otherwise the Adoption Day.
+function birthdayOf(p) {
+  return parseBirthday(p.birthday) || parseBirthday(p.adoptionDay);
+}
+
+// Visit the home page with ?birthdays on the end to see how every birthday was read.
+function showBirthdayCheck(el, pets) {
+  const rows = pets.map(p => {
+    const b = birthdayOf(p);
+    return `<tr><td>${esc(p.name)}</td><td>${esc(p.birthday)}</td><td>${esc(p.adoptionDay)}</td>
+      <td>${b ? esc(MONTHS[b.month - 1].replace(/^./, c => c.toUpperCase()) + " " + b.day) : "⚠️ couldn't read"}</td></tr>`;
+  }).join("");
+  el.insertAdjacentHTML("afterend", `<section class="window"><h2 class="window-title">Birthday check</h2>
+    <div class="window-body"><table class="check-table"><tr><th>Pet</th><th>Birthday cell</th><th>Adoption Day cell</th><th>Read as</th></tr>${rows}</table></div></section>`);
 }
 
 async function renderBirthdays() {
@@ -395,9 +430,10 @@ async function renderBirthdays() {
   if (!el) return;
   const today = new Date();
   const pets = (await loadPets()).filter(p => {
-    const b = parseBirthday(p.birthday);
+    const b = birthdayOf(p);
     return b && b.month === today.getMonth() + 1 && b.day === today.getDate();
   });
+  if (location.search.includes("birthdays")) showBirthdayCheck(el, await loadPets());
   if (!pets.length) return;
   const names = pets.map(p => esc(p.name));
   const list = names.length === 1 ? names[0] : names.slice(0, -1).join(", ") + " and " + names.at(-1);
